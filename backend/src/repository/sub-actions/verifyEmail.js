@@ -7,6 +7,5 @@ export async function verifyEmail(email) {
     `
 
     let [resp] = await connection.query(command,[email])
-    console.log(resp)
     return resp;
 }
