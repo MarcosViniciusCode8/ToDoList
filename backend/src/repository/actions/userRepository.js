@@ -1,4 +1,5 @@
 import connection from "../connection/connection.js";
+import bcrypt from 'bcrypt';
 
 export async function createAccount(user,email,hash) {
     const command = `
@@ -13,3 +14,4 @@ export async function createAccount(user,email,hash) {
     ])
     return resp.insertId;
 }
+

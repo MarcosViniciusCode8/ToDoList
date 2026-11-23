@@ -1,4 +1,3 @@
-import { hash } from 'bcrypt';
 import * as userRepository from '../../repository/actions/userRepository.js';
 import { verifyEmail } from '../../repository/sub-actions/verifyEmail.js';
 import { verifyName } from '../../repository/sub-actions/verifyName.js';
