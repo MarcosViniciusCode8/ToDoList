@@ -6,6 +6,15 @@ import createAccount from "../service/users/createAccount.js";
 import login from "../service/users/login.js";
 import TokenValidationUser from "../utils/tokenValidation.js";
 
+function sendUserError(resp, err, fallbackMessage) {
+    if (err.status === 400 || err.status === 401 || err.status === 409) {
+        return resp.status(err.status).send({ erro: err.message });
+    }
+
+    errorMessageInConsole(err.message);
+    return resp.status(500).send({ erro: fallbackMessage });
+}
+
 endpoint.post('/user/register', async (req, resp) => {
     try {
         let user = req.body;
@@ -13,15 +22,11 @@ endpoint.post('/user/register', async (req, resp) => {
         await createAccount(user);
 
         resp.status(201).send({
-            response: "Sua conta foi criada com sucesso"
+            response: "Your account was created successfully."
         })
     }
     catch (err) {
-        let erro = err.message
-        resp.status(400).send({
-            erro: erro
-        })
-        errorMessageInConsole(erro)
+        return sendUserError(resp, err, 'An internal error occurred while creating your account.');
     }
 })
 
@@ -36,11 +41,7 @@ endpoint.post('/user/login', async (req, resp) => {
         })
     }
     catch (err) {
-        let erro = err.message
-        resp.status(401).send({
-            erro: erro
-        })
-        errorMessageInConsole(erro)
+        return sendUserError(resp, err, 'An internal error occurred while signing in.');
     }
 })
 
