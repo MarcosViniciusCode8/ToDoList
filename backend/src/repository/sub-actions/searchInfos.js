@@ -7,6 +7,5 @@ export async function searchInfos(email) {
     `
 
     let [resp] = await connection.query(command,[email])
-    console.log(resp[0]);
     return resp[0];
 }

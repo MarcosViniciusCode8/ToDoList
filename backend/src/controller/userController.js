@@ -1,17 +1,17 @@
 import { Router } from "express";
 const endpoint = Router();
-import errorMessageInConsole from "../utils/errorMessageInConsole.js";
+
 
 import createAccount from "../service/users/createAccount.js";
 import login from "../service/users/login.js";
 import TokenValidationUser from "../utils/tokenValidation.js";
+import loginLimiter from "../utils/rateLimiter.js";
 
 function sendUserError(resp, err, fallbackMessage) {
     if (err.status === 400 || err.status === 401 || err.status === 409) {
         return resp.status(err.status).send({ erro: err.message });
     }
 
-    errorMessageInConsole(err.message);
     return resp.status(500).send({ erro: fallbackMessage });
 }
 
@@ -30,7 +30,7 @@ endpoint.post('/user/register', async (req, resp) => {
     }
 })
 
-endpoint.post('/user/login', async (req, resp) => {
+endpoint.post('/user/login', loginLimiter , async (req, resp) => {
     try {
         let user = req.body;
 
@@ -57,7 +57,6 @@ endpoint.get('/health', TokenValidationUser, async (req, resp) => {
         resp.status(401).send({
             erro: erro
         })
-        errorMessageInConsole(erro)
     }
 })
 export default endpoint;
