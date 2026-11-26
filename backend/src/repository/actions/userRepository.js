@@ -6,12 +6,12 @@ export async function createAccount(user,email,hash) {
         VALUES(?,?,?,'user')
     `
 
-    let [resp] = await connection.query(command,[
+    let [rows] = await connection.query(command,[
         user.name,
         email,
         hash
     ])
-    return resp.insertId;
+    return rows.insertId;
 }
 
 export async function viewProfile(id){
@@ -22,5 +22,27 @@ export async function viewProfile(id){
 
     const [rows] = await connection.query(command, [id]);
     return rows[0];
+}
+
+export async function editUsername(name, id) {
+    const command = `
+    UPDATE users
+    SET name = ?
+    WHERE id = ?;
+    `
+
+    const [rows] = await connection.query(command,[name,id]);
+    return rows.affectedRows
+}
+
+export async function editEmail(email, id) {
+    const command = `
+    UPDATE users
+    SET email = ?
+    WHERE id = ?;
+    `
+
+    const [rows] = await connection.query(command,[email,id]);
+    return rows.affectedRows
 }
 
