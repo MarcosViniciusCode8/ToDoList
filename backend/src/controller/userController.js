@@ -4,18 +4,12 @@ const endpoint = Router();
 
 import createAccount from "../service/users/createAccount.js";
 import login from "../service/users/login.js";
+import viewProfile from "../service/users/viewProfile.js";
 import TokenValidationUser from "../utils/tokenValidation.js";
 import loginLimiter from "../utils/rateLimiter.js";
+import sendUserError from "../utils/sendUserError.js";
 
-function sendUserError(resp, err, fallbackMessage) {
-    if (err.status === 400 || err.status === 401 || err.status === 409) {
-        return resp.status(err.status).send({ erro: err.message });
-    }
-
-    return resp.status(500).send({ erro: fallbackMessage });
-}
-
-endpoint.post('/user/register', async (req, resp) => {
+endpoint.post('/api/auth/cadastro', async (req, resp) => {
     try {
         let user = req.body;
 
@@ -30,7 +24,7 @@ endpoint.post('/user/register', async (req, resp) => {
     }
 })
 
-endpoint.post('/user/login', loginLimiter , async (req, resp) => {
+endpoint.post('/api/auth/login', loginLimiter, async (req, resp) => {
     try {
         let user = req.body;
 
@@ -45,18 +39,17 @@ endpoint.post('/user/login', loginLimiter , async (req, resp) => {
     }
 })
 
-
-endpoint.get('/health', TokenValidationUser, async (req, resp) => {
+endpoint.post('/api/users/me', TokenValidationUser, async (req, resp) => {
     try {
-        resp.send({
-            resp: "ok"
-        })
+        const password = req.body?.password;
+        const id = req.user.id;
+
+        const response = await viewProfile(id, password);
+        return resp.send(response);
     }
     catch (err) {
-        let erro = err.message
-        resp.status(401).send({
-            erro: erro
-        })
+        return sendUserError(resp, err, 'An internal error occurred while processing your query.');
     }
 })
+
 export default endpoint;

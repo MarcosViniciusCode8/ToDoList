@@ -1,5 +1,4 @@
 import connection from "../connection/connection.js";
-import bcrypt from 'bcrypt';
 
 export async function createAccount(user,email,hash) {
     const command = `
@@ -13,5 +12,15 @@ export async function createAccount(user,email,hash) {
         hash
     ])
     return resp.insertId;
+}
+
+export async function viewProfile(id){
+    const command = `
+    SELECT name, email, user_type FROM users
+    WHERE id = ?
+    `
+
+    const [rows] = await connection.query(command, [id]);
+    return rows[0];
 }
 
